@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Hobi;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SiswaController extends Controller
 {
@@ -13,9 +14,12 @@ class SiswaController extends Controller
      */
     public function index()
     {
-        $datasiswa = Siswa::with('hobi')->get();
+        $datasiswa = Siswa::with('hobi')->where('user_id', Auth::user()->id)->get();
+
         $datahobi = Hobi::all();
-        return view('hobi.app', compact('datasiswa','datahobi'));
+
+        return view('hobi.app', compact('datasiswa', 'datahobi'));
+
     }
     /**
      * Show the form for creating a new resource.
@@ -43,6 +47,7 @@ class SiswaController extends Controller
 
         $data = Siswa::create([
             'nama' => $request->input('name'),
+            'user_id' => Auth::user()->id
         ]);
     
         $data->hobi()->sync($request->hobis);
@@ -65,6 +70,11 @@ class SiswaController extends Controller
     {
         $datasiswa = Siswa::with('hobi')->findOrFail($id);
         $datahobi = Hobi::all();
+
+        if ($datasiswa->user_id !== auth::user()->id) {
+            return redirect()->route('siswa.index')->withErrors('Anda tidak memiliki izin untuk mengedit data ini.');
+        }
+
         return view('hobi.edit', compact('datasiswa','datahobi'));
     }
 

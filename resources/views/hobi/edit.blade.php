@@ -32,6 +32,7 @@
             </div>
     
             <button type="submit" class="btn btn-primary mt-2">Update</button>
+
         </form>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
